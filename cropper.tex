@@ -1,0 +1,40 @@
+% Taken and modified from pdfcrop.pl from
+% http://www.ctan.org/tex-archive/support/pdfcrop/
+%
+% Copyright (C) 2002, 2004, 2005, 2008-2010 Heiko Oberdiek.
+%
+% This program may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.2
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%  http://www.latex-project.org/lppl.txt
+
+\def\pdffile{~INPUT~}
+
+\def\stripprefix#1>{}
+\def\onelevelsanitize#1{%
+  \edef#1{\expandafter\stripprefix\meaning#1}%
+}
+\onelevelsanitize\pdffile
+\csname pdfmapfile\endcsname{}
+\def\page #1 [#2 #3 #4 #5]{%
+  \count0=#1\relax
+  \setbox0=\hbox{%
+    \pdfximage page #1{\pdffile}%
+    \pdfrefximage\pdflastximage
+  }%
+  \pdfhorigin=-#2bp\relax
+  \pdfvorigin=#3bp\relax
+  \pdfpagewidth=#4bp\relax
+  \advance\pdfpagewidth by -#2bp\relax
+  \pdfpageheight=#5bp\relax
+  \advance\pdfpageheight by -#3bp\relax
+  \ht0=\pdfpageheight
+  \shipout\box0\relax
+  \typeout{PAGE#1}
+}
+
+~PAGES~
+
+\csname @@end\endcsname
+\end
