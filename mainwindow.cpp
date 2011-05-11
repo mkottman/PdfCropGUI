@@ -29,7 +29,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     on_actionPageChanged_triggered();
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+    int p = ui->pageValue->value();
+    if (event->delta() < 0) {
+        ui->pageValue->setValue(p+1);
+    } else {
+        ui->pageValue->setValue(p-1);
+    }
 }
 
 void MainWindow::on_actionLoad_triggered()
@@ -45,6 +56,10 @@ void MainWindow::on_actionLoad_triggered()
 
         document = Poppler::Document::load(sourceFilename);
         if (document) {
+            document->setRenderHint(Poppler::Document::Antialiasing);
+            document->setRenderHint(Poppler::Document::TextAntialiasing);
+            document->setRenderHint(Poppler::Document::TextHinting);
+
             int pages = document->numPages();
             ui->pager->setVisible(true);
             ui->pageValue->setSuffix(QString("/%1").arg(pages));
@@ -64,7 +79,7 @@ void MainWindow::on_actionLoad_triggered()
 void MainWindow::on_actionPageChanged_triggered()
 {
     updateTimer.stop();
-    updateTimer.start(250);
+    updateTimer.start(100);
 }
 
 void MainWindow::reload_page()
@@ -135,12 +150,10 @@ void MainWindow::on_btnCrop_clicked()
 
         QFile workFile("cropwork.tex");
         if (workFile.open(QIODevice::WriteOnly)) {
-            // TODO: make this a temporary file
-            bool ok = QFile::copy(sourceFilename, "cropsource.pdf");
+            QFile::copy(sourceFilename, "cropsource.pdf");
 
             QStringList pageList;
             int num = document->numPages();
-            num=20; // TODO: delete
             for (int i=0; i<num; i++) {
                 pageList << QString("\\page %1 [%2 %3 %4 %5]").arg(i+1).arg(left).arg(top).arg(right).arg(bottom);
             }
@@ -167,8 +180,10 @@ void MainWindow::on_btnCrop_clicked()
 
 void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    Q_UNUSED(exitCode);
     if (exitStatus == EXIT_SUCCESS) {
-        QString newName = sourceFilename.replace(".pdf", "_cropped.pdf");
+        QString newName = sourceFilename;
+        newName.replace(".pdf", "_cropped.pdf");
         QFile::rename("cropwork.pdf", newName);
         QFile::remove("cropwork.tex");
         ui->progressBar->hide();

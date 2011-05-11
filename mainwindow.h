@@ -28,6 +28,7 @@ private:
     QProcess *workerProcess;
 
     void resizeEvent ( QResizeEvent * event );
+    void wheelEvent ( QWheelEvent * event );
 
 private slots:
     void on_btnCrop_clicked();
