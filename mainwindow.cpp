@@ -3,6 +3,12 @@
 
 #include <QDebug>
 
+    QList<int> pageNumList;
+    QList<int> leftList;
+    QList<int> topList;
+    QList<int> rightList;
+    QList<int> bottomList;
+
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
@@ -15,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
     updateTimer.setSingleShot(true);
     connect(&updateTimer, SIGNAL(timeout()), SLOT(reload_page()));
     connect(ui->display, SIGNAL(rectangleSelected(QRect)), SLOT(rectSelected(QRect)));
+
+    //Crosshair cursor
+    setCursor(Qt::CrossCursor);
 
     workerProcess = new QProcess(this);
     connect(workerProcess, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(processFinished(int,QProcess::ExitStatus)));
@@ -140,6 +149,10 @@ void MainWindow::on_btnCrop_clicked()
 {
     QString cropBox = ui->cropBox->text();
     QRegExp r("^(\\d+) (\\d+) (\\d+) (\\d+)$");
+
+    // Current page
+    int pageNum = ui->pageValue->value();
+
     if (!r.exactMatch(cropBox)) {
         QMessageBox::warning(this, "Cropbox error", "You typed something wrong in cropbox.\nExpected format: 'left top right bottom' (all integers, no special characters).");
     } else {
@@ -148,14 +161,25 @@ void MainWindow::on_btnCrop_clicked()
         int right = r.cap(3).toInt();
         int bottom = r.cap(4).toInt();
 
+	pageNumList << pageNum;
+	leftList << left;
+	topList << top;
+	rightList << right;
+	bottomList << bottom;
+    }
+}
+
+void MainWindow::on_btnExport_clicked()
+{
         QFile workFile("cropwork.tex");
         if (workFile.open(QIODevice::WriteOnly)) {
             QFile::copy(sourceFilename, "cropsource.pdf");
 
             QStringList pageList;
-            int num = document->numPages();
+	    int num = pageNumList.size();
+
             for (int i=0; i<num; i++) {
-                pageList << QString("\\page %1 [%2 %3 %4 %5]").arg(i+1).arg(left).arg(top).arg(right).arg(bottom);
+	      pageList << QString("\\page %1 [%2 %3 %4 %5]").arg(pageNumList.at(i)).arg(leftList.at(i)).arg(topList.at(i)).arg(rightList.at(i)).arg(bottomList.at(i));
             }
             QString pages = pageList.join("\n");
 
@@ -175,7 +199,6 @@ void MainWindow::on_btnCrop_clicked()
         } else {
             QMessageBox::warning(this, "File creation error", "Cannot create temporary files.");
         }
-    }
 }
 
 void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
