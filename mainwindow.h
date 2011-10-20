@@ -32,6 +32,7 @@ private:
 
 private slots:
     void on_btnCrop_clicked();
+	void on_btnExport_clicked();
     void on_actionPageChanged_triggered();
     void on_actionLoad_triggered();
     void reload_page();
