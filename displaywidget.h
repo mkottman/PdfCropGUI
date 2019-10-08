@@ -2,6 +2,8 @@
 #define DISPLAYWIDGET_H
 
 #include <QtGui>
+#include <QLabel>
+#include <QRubberBand>
 
 class DisplayWidget : public QLabel
 {

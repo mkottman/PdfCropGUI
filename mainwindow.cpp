@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
 #include <QDebug>
 
     QList<int> pageNumList;

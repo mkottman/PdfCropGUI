@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QtGui>
-#include <poppler-qt4.h>
+#include <QMainWindow>
+#include <QRubberBand>
+#include <poppler/qt5/poppler-qt5.h>
 
 #include "displaywidget.h"
 

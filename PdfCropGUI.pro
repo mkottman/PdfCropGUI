@@ -4,25 +4,22 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
 TARGET = PdfCrop
 TEMPLATE = app
 
-INCLUDEPATH  += /usr/include/poppler/qt4
-LIBS         += -L/usr/lib -lpoppler-qt4
+LIBS    += -lpoppler-qt5
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    displaywidget.cpp
+           mainwindow.cpp \
+           displaywidget.cpp
 
-HEADERS  += mainwindow.h \
-    displaywidget.h
+HEADERS += mainwindow.h \
+            displaywidget.h
 
-FORMS    += mainwindow.ui
+FORMS   += mainwindow.ui
 
-RESOURCES += \
-    resources.qrc
+RESOURCES += resources.qrc
 
-OTHER_FILES += \
-    cropper.tex
+OTHER_FILES += cropper.tex
